@@ -1,4 +1,5 @@
 #![feature(error_reporter)]
+#![feature(lazy_cell)]
 #![recursion_limit = "256"]
 
 use std::convert::TryInto;
@@ -10,9 +11,8 @@ use std::sync::Arc;
 
 use anyhow::Context;
 use hyper_proxy::{Intercept, Proxy};
-use once_cell::sync::OnceCell;
+use std::sync::OnceLock;
 use structopt::StructOpt;
-use tbot;
 use tbot::bot::Uri;
 use tokio::{self, sync::Mutex};
 
@@ -30,8 +30,8 @@ mod opml;
 
 use crate::data::Database;
 
-static BOT_NAME: OnceCell<String> = OnceCell::new();
-static BOT_ID: OnceCell<tbot::types::user::Id> = OnceCell::new();
+static BOT_NAME: OnceLock<String> = OnceLock::new();
+static BOT_ID: OnceLock<tbot::types::user::Id> = OnceLock::new();
 
 #[derive(Debug, StructOpt)]
 #[structopt(
@@ -111,8 +111,8 @@ async fn main() -> anyhow::Result<()> {
 
     let opt = Opt::from_args();
     let db = Arc::new(Mutex::new(Database::open(opt.database.clone())?));
-    let bot_builder = tbot::bot::Builder::with_string_token(opt.token.clone())
-        .server_uri(opt.api_uri.clone());
+    let bot_builder =
+        tbot::bot::Builder::with_string_token(opt.token.clone()).server_uri(opt.api_uri.clone());
     let bot = if let Some(proxy) = init_proxy() {
         bot_builder.proxy(proxy).build()
     } else {

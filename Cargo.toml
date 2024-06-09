@@ -16,18 +16,12 @@ native-tls = [
     "reqwest/native-tls-vendored",
     "reqwest/native-tls-alpn",
 ]
-rustls = [
-    "tbot/rustls",
-    "hyper-proxy/rustls",
-    "reqwest/rustls-tls",
-]
+rustls = ["tbot/rustls", "hyper-proxy/rustls", "reqwest/rustls-tls"]
 
 [build-dependencies]
 ctl10n = "0.2.0"
 
 [dependencies]
-lazy_static = "1.4"
-once_cell = "1.18"
 anyhow = "1.0"
 structopt = "0.3"
 futures = "0.3"
