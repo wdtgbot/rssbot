@@ -5,16 +5,17 @@
 Telegram RSS bot [@RustRssBot](http://t.me/RustRssBot)
 
 **Supports:**
- - [x] RSS 0.9
- - [x] RSS 0.91
- - [x] RSS 0.92
- - [x] RSS 0.93
- - [x] RSS 0.94
- - [x] RSS 1.0
- - [x] RSS 2.0
- - [x] Atom 0.3
- - [x] Atom 1.0
- - [x] JSON Feed 1
+
+- [x] RSS 0.9
+- [x] RSS 0.91
+- [x] RSS 0.92
+- [x] RSS 0.93
+- [x] RSS 0.94
+- [x] RSS 1.0
+- [x] RSS 2.0
+- [x] Atom 0.3
+- [x] Atom 1.0
+- [x] JSON Feed 1
 
 ## Usage
 
@@ -25,13 +26,13 @@ Telegram RSS bot [@RustRssBot](http://t.me/RustRssBot)
 
 ## Download
 
-The pre-compiled binaries can be downloaded directly from [Releases](https://github.com/iovxw/rssbot/releases). Make sure to use the english binary (`rssbot-en-amd64-linux`). The Linux version is statically linked to *musl*, no other dependencies required.
+The pre-compiled binaries can be downloaded directly from [Releases](https://github.com/iovxw/rssbot/releases). Make sure to use the english binary (`rssbot-en-amd64-linux`). The Linux version is statically linked to _musl_, no other dependencies required.
 
 ## Compile
 
 **Please try to download from the Link above, if that's not feasible or you have other requirements you should compile manually**
 
-Install *Rust Nightly* and *Cargo* ([`rustup` recommended](https://www.rustup.rs/)) first, then:
+Install _Rust Nightly_ and _Cargo_ ([`rustup` recommended](https://www.rustup.rs/)) first, then:
 
 ```
 LOCALE=en cargo build --release
@@ -58,7 +59,7 @@ OPTIONS:
                                     multiple times to allow multiple admins
         --api-uri <tgapi-uri>       Custom telegram api URI [default: https://api.telegram.org/]
     -d, --database <path>           Path to database [default: ./rssbot.json]
-        --max-feed-size <bytes>     Maximum feed size, 0 is unlimited [default: 2097152]
+        --max-feed-size <bytes>     Maximum feed size, 0 is unlimited [default: 2M]
         --max-interval <seconds>    Maximum fetch interval [default: 43200]
         --min-interval <seconds>    Minimum fetch interval [default: 300]
 
