@@ -16,7 +16,11 @@ native-tls = [
     "reqwest/native-tls-vendored",
     "reqwest/native-tls-alpn",
 ]
-rustls = ["tbot/rustls", "hyper-proxy/rustls", "reqwest/rustls-tls"]
+rustls = [
+    "tbot/rustls",
+    "hyper-proxy/rustls",
+    "reqwest/rustls-tls",
+]
 
 [build-dependencies]
 ctl10n = "0.2.0"
