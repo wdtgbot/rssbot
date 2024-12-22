@@ -1531,8 +1531,6 @@ dependencies = [
  "either",
  "futures",
  "hyper-proxy",
- "lazy_static",
- "once_cell",
  "pinyin",
  "quick-xml",
  "regex",

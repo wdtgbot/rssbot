@@ -1,4 +1,5 @@
 #![feature(error_reporter)]
+#![feature(lazy_cell)]
 #![recursion_limit = "256"]
 
 use std::convert::TryInto;
@@ -8,11 +9,10 @@ use std::path::PathBuf;
 use std::process;
 use std::sync::Arc;
 
-use anyhow::Context;
+use anyhow::{anyhow, Context};
 use hyper_proxy::{Intercept, Proxy};
-use once_cell::sync::OnceCell;
+use std::sync::OnceLock;
 use structopt::StructOpt;
-use tbot;
 use tbot::bot::Uri;
 use tokio::{self, sync::Mutex};
 
@@ -30,8 +30,8 @@ mod opml;
 
 use crate::data::Database;
 
-static BOT_NAME: OnceCell<String> = OnceCell::new();
-static BOT_ID: OnceCell<tbot::types::user::Id> = OnceCell::new();
+static BOT_NAME: OnceLock<String> = OnceLock::new();
+static BOT_ID: OnceLock<tbot::types::user::Id> = OnceLock::new();
 
 #[derive(Debug, StructOpt)]
 #[structopt(
@@ -67,10 +67,10 @@ pub struct Opt {
     )]
     // default is 12 hours
     max_interval: u32,
-    /// Maximum feed size, 0 is unlimited
-    #[structopt(long, value_name = "bytes", default_value = "2097152")]
-    // default is 2MiB
-    max_feed_size: u64,
+    /// Maximum feed size, 0 is unlimited.
+    #[structopt(long, value_name = "bytes", default_value = "2M")]
+    // Default is 2M.
+    max_feed_size: String,
     /// Private mode, only specified user can use this bot.
     /// This argument can be passed multiple times to allow multiple admins
     #[structopt(
@@ -105,14 +105,30 @@ fn check_interval(s: String) -> Result<(), String> {
     })
 }
 
+/// Parse human readable size into bytes.
+fn parse_human_size(s: &str) -> anyhow::Result<u64> {
+    const BASE: u64 = 1024;
+    let s = s.trim().trim_end_matches(|x| x == 'B' || x == 'b');
+    match s.chars().last().map(|x| x.to_ascii_lowercase()) {
+        Some('b') => Ok(s[..s.len() - 1].parse()?),
+        Some('k') => Ok(s[..s.len() - 1].parse::<u64>()? * BASE),
+        Some('m') => Ok(s[..s.len() - 1].parse::<u64>()? * BASE.pow(2)),
+        Some('g') => Ok(s[..s.len() - 1].parse::<u64>()? * BASE.pow(3)),
+        Some('t') => Ok(s[..s.len() - 1].parse::<u64>()? * BASE.pow(4)),
+        Some(x) if x.is_ascii_digit() => Ok(s.parse()?),
+        Some(x) => Err(anyhow!("invalid size character: {}", x)),
+        None => Err(anyhow!("empty size")),
+    }
+}
+
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     enable_fail_fast();
 
     let opt = Opt::from_args();
     let db = Arc::new(Mutex::new(Database::open(opt.database.clone())?));
-    let bot_builder = tbot::bot::Builder::with_string_token(opt.token.clone())
-        .server_uri(opt.api_uri.clone());
+    let bot_builder =
+        tbot::bot::Builder::with_string_token(opt.token.clone()).server_uri(opt.api_uri.clone());
     let bot = if let Some(proxy) = init_proxy() {
         bot_builder.proxy(proxy).build()
     } else {
@@ -125,7 +141,11 @@ async fn main() -> anyhow::Result<()> {
         .context("Initialization failed, check your network and Telegram token")?;
 
     let bot_name = me.user.username.clone().unwrap();
-    crate::client::init_client(&bot_name, opt.insecure, opt.max_feed_size);
+    crate::client::init_client(
+        &bot_name,
+        opt.insecure,
+        parse_human_size(&opt.max_feed_size).context("Invalid max_feed_size")?,
+    );
 
     BOT_NAME.set(bot_name).unwrap();
     BOT_ID.set(me.user.id).unwrap();
@@ -172,4 +192,17 @@ fn print_error<E: std::error::Error>(err: E) {
             .pretty(true)
             .show_backtrace(true)
     );
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse_human_size() {
+        assert_eq!(parse_human_size("2M").unwrap(), 2_097_152);
+        assert_eq!(parse_human_size("2G").unwrap(), 2_147_483_648);
+        assert_eq!(parse_human_size("2mb").unwrap(), 2_097_152);
+        assert_eq!(parse_human_size("2097152").unwrap(), 2_097_152);
+    }
 }
