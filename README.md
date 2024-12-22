@@ -2,20 +2,19 @@
 
 **Other Languages:** [English](README.en.md)
 
-Telegram RSS 机器人  [@RustRssBot](http://t.me/RustRssBot)
+Telegram RSS 机器人 [@RustRssBot](http://t.me/RustRssBot)
 
 **支持:**
-
-- [x] RSS 0.9
-- [x] RSS 0.91
-- [x] RSS 0.92
-- [x] RSS 0.93
-- [x] RSS 0.94
-- [x] RSS 1.0
-- [x] RSS 2.0
-- [x] Atom 0.3
-- [x] Atom 1.0
-- [x] JSON Feed 1
+ - [x] RSS 0.9
+ - [x] RSS 0.91
+ - [x] RSS 0.92
+ - [x] RSS 0.93
+ - [x] RSS 0.94
+ - [x] RSS 1.0
+ - [x] RSS 2.0
+ - [x] Atom 0.3
+ - [x] Atom 1.0
+ - [x] JSON Feed 1
 
 ## 使用
 
@@ -26,13 +25,13 @@ Telegram RSS 机器人  [@RustRssBot](http://t.me/RustRssBot)
 
 ## 下载
 
-可直接从 [Releases](https://github.com/iovxw/rssbot/releases) 下载预编译的程序（带 `zh` 的为中文版）, Linux 版本为 _musl_ 静态链接, 无需其他依赖
+可直接从 [Releases](https://github.com/iovxw/rssbot/releases) 下载预编译的程序（带 `zh` 的为中文版）, Linux 版本为 *musl* 静态链接, 无需其他依赖
 
 ## 编译
 
 **请先尝试从上面下载, 如不可行或者有其他需求再手动编译**
 
-先安装 _Rust Nightly_ 以及 _Cargo_ (推荐使用 [`rustup`](https://www.rustup.rs/)), 然后:
+先安装 *Rust Nightly* 以及 *Cargo* (推荐使用 [`rustup`](https://www.rustup.rs/)), 然后:
 
 ```
 cargo build --release
@@ -57,7 +56,7 @@ OPTIONS:
                                     multiple times to allow multiple admins
         --api-uri <tgapi-uri>       Custom telegram api URI [default: https://api.telegram.org/]
     -d, --database <path>           Path to database [default: ./rssbot.json]
-        --max-feed-size <bytes>     Maximum feed size, 0 is unlimited [default: 2M]
+        --max-feed-size <bytes>     Maximum feed size, 0 is unlimited [default: 2097152]
         --max-interval <seconds>    Maximum fetch interval [default: 43200]
         --min-interval <seconds>    Minimum fetch interval [default: 300]
 
