@@ -1,5 +1,4 @@
 #![feature(error_reporter)]
-#![feature(lazy_cell)]
 #![recursion_limit = "256"]
 
 use std::convert::TryInto;
@@ -67,9 +66,8 @@ pub struct Opt {
     )]
     // default is 12 hours
     max_interval: u32,
-    /// Maximum feed size, 0 is unlimited.
+    /// Maximum feed size, 0 is unlimited
     #[structopt(long, value_name = "bytes", default_value = "2M")]
-    // Default is 2M.
     max_feed_size: String,
     /// Private mode, only specified user can use this bot.
     /// This argument can be passed multiple times to allow multiple admins
